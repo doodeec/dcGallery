@@ -1,0 +1,4 @@
+dcGallery
+=========
+
+angular gallery module
