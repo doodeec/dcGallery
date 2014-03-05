@@ -1,0 +1,118 @@
+@keyframes loader-rotate {
+    from { transform: translate(-50%,-50%) rotate(0deg); }
+    to { transform: translate(-50%,-50%) rotate(360deg); }
+}
+
+// MIXINS
+@mixin fill_position {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+@mixin image_common {
+    position: absolute;
+    @include fill_position;
+    max-width: 100%;
+    transition: opacity 0.4s ease;
+}
+@mixin ratio1_1 {
+    &:before{
+        content: "";
+        display: block;
+        padding-top: 100%;
+    }
+}
+@mixin loader {
+    &:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 2em;
+        height: 2em;
+        border: 0.5em solid transparent;
+        border-top: 0.5em solid black;
+        border-radius: 50%;
+        animation: loader-rotate 0.5s linear infinite;
+        z-index: 0;
+    }
+}
+
+// STYLES
+.dc-gallery {
+    text-align: center;
+
+    .backdrop {
+        position: fixed;
+        @include fill_position;
+        background: rgba(0,0,0,.9);
+        z-index: 19998;
+    }
+
+    .fullscreenWrapper {
+        background: rgba(255,255,255,.5);
+        position: fixed;
+        cursor: pointer;
+        width: 200px;
+        max-width: 200px;
+        overflow: hidden;
+        transition: all 0.3s ease, max-width 0.3s ease;
+        transition-delay: 0,0.2s;
+        display: none;
+        z-index: 20000;
+
+        // webkit performance
+        transform: translate3d(0,0,0);
+
+        &.shown {
+            display: block;
+        }
+
+        img {
+            @include image_common;
+            &.opaque { opacity: 0; }
+        }
+
+        &.revealed {
+            width: auto;
+            max-width: 95%;
+            max-height: 95%;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%,-50%);
+
+            img {
+                position: relative;
+                // TODO doesnt work in FF
+                max-height: 100%;
+            }
+
+            &:before{ display: none; }
+            &:after{ display: none; }
+        }
+
+        @include ratio1_1;
+    }
+
+    .dc-image {
+        margin: 0.5em;
+        position: relative;
+        width: 200px;
+        overflow: hidden;
+        display: inline-block;
+        cursor: pointer;
+        background: rgba(0,0,0,.5);
+
+        img {
+            @include image_common;
+            opacity: 0;
+            z-index: 1;
+            &.revealed { opacity: 1; }
+        }
+
+        @include ratio1_1;
+        @include loader;
+    }
+}
