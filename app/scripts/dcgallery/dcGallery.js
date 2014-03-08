@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('dc-gallery', [])
-    .directive('dcGallery', function ($q, $timeout) {
+    .directive('dcGallery', function ($q, $timeout, $window) {
         //jqLite offset polyfill
         function offset(elm) {
             try {
@@ -29,16 +29,27 @@ angular.module('dc-gallery', [])
                 '<div class="backdrop" ng-click="cancelFullscreen()" ng-show="fsLoaded"></div>' +
                 '<div class="fullscreenWrapper" ng-click="cancelFullscreen()"' +
                 'ng-class="{revealed: fsLoaded, shown: fsShow}"' +
-                'ng-style="{left: fswPos.left+\'px\', top: fswPos.top+\'px\'}">' +
+                'ng-style="{left: fswPos.left+\'px\', top: fswPos.top+\'px\',' +
+                'width: fswSz.width+\'px\', height: fswSz.height+\'px\'}">' +
                 '<img ng-src="{{ fsUrl }}" ng-class="{opaque: !fsLoaded}"/>' +
                 '</div>' +
                 '</div>',
             compile: function (tElem, tAttrs) {
                 function toFullscreen(imgUrl) {
                     var defer = $q.defer(),
-                        img = new Image();
+                        img = new Image(),
+                        resolveObj = {height: 0, width: 0};
 
-                    img.addEventListener('load', defer.resolve);
+                    img.addEventListener('load', function () {
+                        if ($window.innerWidth / img.width > $window.innerHeight / img.height) {
+                            resolveObj.height = $window.innerHeight;
+                            resolveObj.width = img.width / (img.height / $window.innerHeight);
+                        } else {
+                            resolveObj.width = $window.innerWidth;
+                            resolveObj.height = img.height / (img.width / $window.innerWidth);
+                        }
+                        defer.resolve(resolveObj);
+                    });
                     img.src = imgUrl;
                     return defer.promise;
                 }
@@ -50,13 +61,15 @@ angular.module('dc-gallery', [])
                         scope.fswPos = offset(target);
                         scope.fsShow = true;
 
-                        toFullscreen(imageUrl).then(function () {
+                        toFullscreen(imageUrl).then(function (size) {
+                            scope.fswSz = size;
                             scope.fsUrl = imageUrl;
                             scope.fsLoaded = true;
                         });
                     };
                     scope.cancelFullscreen = function () {
                         scope.fsLoaded = false;
+                        scope.fswSz = {};
                         $timeout(function () {
                             scope.fsShow = false;
                         }, 250);
