@@ -29,7 +29,8 @@ angular.module('dc-gallery', [])
                 '<div class="backdrop" ng-click="cancelFullscreen()" ng-show="fsLoaded"></div>' +
                 '<div class="fullscreenWrapper" ng-click="cancelFullscreen()"' +
                 'ng-class="{revealed: fsLoaded, shown: fsShow}"' +
-                'ng-style="{left: fswPos.left+\'px\', top: fswPos.top+\'px\',' +
+                'ng-style="{\'-webkit-transform\': \'translate(\'+fswPos.left+\'px,\'+fswPos.top+\'px)\',' +
+                '\'transform\': \'translate(\'+fswPos.left+\'px,\'+fswPos.top+\'px)\',' +
                 'width: fswSz.width+\'px\', height: fswSz.height+\'px\'}">' +
                 '<img ng-src="{{ fsUrl }}" ng-class="{opaque: !fsLoaded}"/>' +
                 '</div>' +
@@ -82,7 +83,7 @@ angular.module('dc-gallery', [])
         return {
             restrict: 'EA',
             replace: true,
-            template: '<div class="dc-image" ng-click="toFullscreen(imageUrl,$event.target)">' +
+            template: '<div class="dc-image" ng-class="{loaded: loaded}" ng-click="toFullscreen(imageUrl,$event.target)">' +
                 '<img ng-src="{{ imageUrl }}" ng-class="{revealed: loaded}" />' +
                 '</div>',
             scope: true,
