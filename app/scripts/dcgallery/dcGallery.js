@@ -7,15 +7,14 @@ angular.module('dc-gallery', [])
             try {
                 return elm.offset();
             } catch (e) {
+                var body = document.documentElement || document.body,
+                    scrollX = window.pageXOffset || body.scrollLeft,
+                    scrollY = window.pageYOffset || body.scrollTop;
+                return {
+                    left: elm.getBoundingClientRect().left + scrollX,
+                    top: elm.getBoundingClientRect().top + scrollY
+                };
             }
-            var _x = 0;
-            var _y = 0;
-            var body = document.documentElement || document.body;
-            var scrollX = window.pageXOffset || body.scrollLeft;
-            var scrollY = window.pageYOffset || body.scrollTop;
-            _x = elm.getBoundingClientRect().left + scrollX;
-            _y = elm.getBoundingClientRect().top + scrollY;
-            return { left: _x, top: _y };
         }
 
         return {
