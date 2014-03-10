@@ -4,9 +4,9 @@ module.exports = function (grunt) {
 
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
-  grunt.loadNpmTasks('grunt-devtools');
+    require('grunt-devtools')(grunt);
 
-  grunt.initConfig({
+    grunt.initConfig({
 
     yeoman: {
       app: require('./bower.json').appPath || 'app',
